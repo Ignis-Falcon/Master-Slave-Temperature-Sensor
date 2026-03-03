@@ -1,0 +1,2 @@
+# Temperature sensor on AVR (Arduino) operating in Slave Mode
+This project is an arduino programmed on bare metal, a device capable of sending temperature data, managed by a master, which provides configuration and requests data. The project is part of a bigger one that will add my STM32 as role of controller, with the capacity to elaborate and send data with st-link to be able to be used as needed.
