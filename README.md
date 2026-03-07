@@ -24,8 +24,10 @@ Sent data will be a couple of 32bit values, one for representing temperature and
 ```
 It works for up to about 36 hours and 24 minutes, before the timer resets due to overflow and with a configuration of 90 seconds to maintain an auto-save state for up to about 6 hours before overwriting old saves.
 
+To query status of the stack the master can send 0x00 value: It receives a status of the stack, indicating the current number of elements occupied and remaining time before overwriting.
+
 **To do:**
-- implement state command for the AVR to monitor the stack more other information,
-- fix timing reset of sync or in general as required by the master,
-- program my STM32 as master,
-- change communication protocol to I2C.
+- [x] ~~implement state command for the AVR to monitor the stack more other information,~~
+- [ ] fix timing reset of sync or in general as required by the master,
+- [ ] program my STM32 as master,
+- [ ] change communication protocol to I2C.

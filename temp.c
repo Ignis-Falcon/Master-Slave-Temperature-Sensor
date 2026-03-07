@@ -3,6 +3,7 @@
 #include "timer.h"
 
 #include <math.h>
+#include <stdint.h>
 
 #define RESISTENCE  98100.f
 #define RES_NTC     100000.f
@@ -24,6 +25,7 @@ static float TEMP_read(void);
 static float TEMP_pull_temperature(uint32_t camp);
 static float TEMP_pull_log(uint32_t camp);
 static uint32_t TEMP_pull_stack(void);
+static inline void TEMP_send_32bit_value(int32_t value, void (*func_transmit)(unsigned char ch));
 
 void TEMP_init(void) {
     ADC_init();
@@ -43,6 +45,7 @@ float TEMP_read(void) {
     return tt;
 }
 
+/* Capture a temperature reading and of time, then  this value are packed on a 32-bit variable.*/
 uint32_t TEMP_camp(void) {
 
     float temp;
@@ -118,27 +121,25 @@ uint32_t TEMP_pull_stack(void) {
     return temp;
 }
 
+/* Send a 32-bit value through the specified transmit function */
+static inline void TEMP_send_32bit_value(int32_t value, void (*func_transmit)(unsigned char ch)) {
+    uint8_t ch;
+    ch = value & 0xff;
+    func_transmit(ch);
+    ch = (value >> 8) & 0xff;
+    func_transmit(ch);
+    ch = (value >> 16) & 0xff;
+    func_transmit(ch);
+    ch = (value >> 24) & 0xff;
+    func_transmit(ch);
+}
+
 /* extract by 32bit value temperature and log time, in a 32bit variable each one. Then use a callback to send data through a protocol-specific send function. */
 void TEMP_send_value(uint32_t value, void (*func_transmit)(unsigned char ch)) {
     int32_t tempe = (int32_t)(TEMP_pull_temperature(value) * 100);
     uint32_t logge = (uint32_t)TEMP_pull_log(value);
-    uint8_t ch;
-    ch = tempe & 0xff;
-    func_transmit(ch);
-    ch = (tempe >> 8) & 0xff;
-    func_transmit(ch);
-    ch = (tempe >> 16) & 0xff;
-    func_transmit(ch);
-    ch = (tempe >> 24) & 0xff;
-    func_transmit(ch);
-    ch = logge & 0xff;
-    func_transmit(ch);
-    ch = (logge >> 8) & 0xff;
-    func_transmit(ch);
-    ch = (logge >> 16) & 0xff;
-    func_transmit(ch);
-    ch = (logge >> 24) & 0xff;
-    func_transmit(ch);
+    TEMP_send_32bit_value(tempe, func_transmit);
+    TEMP_send_32bit_value((int32_t)logge, func_transmit);
 }
 
 void TEMP_sync_send(void (*func_transmit)(unsigned char ch)) {
@@ -151,4 +152,12 @@ void TEMP_sync_send(void (*func_transmit)(unsigned char ch)) {
 
 void TEMP_reset_stack(void) {
     head = tail = delta = 0;
+}
+
+/* Log the stack status: delta and total sampling time */
+void TEMP_log_stack_status(uint32_t sampling_interval, void (*func_transmit)(unsigned char ch)) {
+    uint32_t tot_time_sampling = (STACK_SIZE - delta) * (sampling_interval / 1000);
+    TEMP_send_32bit_value((int32_t)delta, func_transmit);
+    TEMP_send_32bit_value((int32_t)tot_time_sampling, func_transmit);
+
 }

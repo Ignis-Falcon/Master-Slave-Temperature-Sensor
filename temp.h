@@ -18,5 +18,6 @@ void TEMP_push_stack(uint32_t value);
 void TEMP_send_value(uint32_t value, void (*func_transmit)(unsigned char ch));
 void TEMP_sync_send(void (*func_transmit)(unsigned char ch));
 void TEMP_reset_stack(void);
+void TEMP_log_stack_status(uint32_t sampling_interval, void (*func_transmit)(unsigned char ch));
 
 #endif

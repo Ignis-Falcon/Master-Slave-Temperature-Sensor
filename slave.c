@@ -68,6 +68,11 @@ void SLAVE_state_machine(void) {
                 TEMP_send_value(samp_temp, UART_send_char);
             }
         }
+
+        /* all bit to 0: log stack status */
+        if(ch_temp == 0x00) {
+            TEMP_log_stack_status(sampling_interval, UART_send_char);
+        }
     }
 
     /* sampling and update deadline */
