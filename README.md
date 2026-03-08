@@ -14,6 +14,8 @@ The communication works with UART protocol. The data packet that would contains 
 
 In automatic sampling mode, the system samples data based on bits 3-5 and inserts each single data point into a stack. By default the memory stores up to 256 consecutive data, by doing so overwrite old data, when it reachs the limit. A master call lead to download the memory and to send it.
 
+**NOTE:** Always in automatic mode setted, will go reset stack and timing log, because in synching all temperature data are converted by an unic measurament unit.
+
 Sent data will be a couple of 32bit values, one for representing temperature and another for the measurement time. They will be sent as is usual with UART one byte at a time starting from MSB of time to LSB of temperature. Here an example of sending data:
 
 ```
@@ -28,6 +30,6 @@ To query status of the stack the master can send 0x00 value: It receives a statu
 
 **To do:**
 - [x] ~~implement state command for the AVR to monitor the stack more other information,~~
-- [ ] fix timing reset of sync or in general as required by the master,
+- [x] ~~fix timing reset of sync or in general as required by the master,~~
 - [ ] program my STM32 as master,
 - [ ] change communication protocol to I2C.

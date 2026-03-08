@@ -35,6 +35,7 @@ void SLAVE_state_machine(void) {
                 sampling_mode = true;
                 /* reset old data on change simple mode*/
                 TEMP_reset_stack();
+                TIMER_reset();
             } else {
                 sampling_mode = false;
             }
