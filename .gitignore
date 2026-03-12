@@ -3,3 +3,12 @@
 compile_commands.json
 rr.md
 .cache
+build/
+.mxproject
+.vscode
+Debug/
+Release/
+*.o
+*.elf
+*.bin
+*.hex

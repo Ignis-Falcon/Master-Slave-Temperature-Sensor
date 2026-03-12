@@ -33,3 +33,15 @@ To query status of the stack the master can send 0x00 value: It receives a statu
 - [x] ~~fix timing reset of sync or in general as required by the master,~~
 - [ ] program my STM32 as master,
 - [ ] change communication protocol to I2C.
+
+
+## Licensing
+
+This project is released under the **MIT License** (see the `LICENSE` file in the root directory).
+
+This repository includes third-party libraries required for STM32 hardware functionality:
+
+- **STM32 HAL Drivers:** Developed by STMicroelectronics. Distributed under the terms of the **BSD-3-Clause License** (documentation available within the `master/Drivers/STM32G4xx_HAL_Driver` directory).
+- **CMSIS (Cortex Microcontroller Software Interface Standard):** Developed by ARM. Distributed under the terms of the **Apache 2.0 License** (documentation available within the `master/Drivers/CMSIS/` directory).
+
+All rights to third-party files remain with their respective owners.
