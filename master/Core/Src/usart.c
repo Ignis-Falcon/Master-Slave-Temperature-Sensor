@@ -33,7 +33,7 @@ void MX_USART1_UART_Init(void)
 {
 
   /* USER CODE BEGIN USART1_Init 0 */
-
+  /* huart2 is used for debugging through st-link, while huart1 is used for serial communication with the slave */
   /* USER CODE END USART1_Init 0 */
 
   /* USER CODE BEGIN USART1_Init 1 */
