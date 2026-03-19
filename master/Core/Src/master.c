@@ -16,16 +16,21 @@ struct config {
     type_log log_time;
     type_samp samp_time;
     bool save_setting;
+    uint8_t percentage;
 } init = {
     .temperature = CELSIUS,
     .log_time = LOG,
     .samp_time = TEN_S,
+    .percentage = 10,
     .save_setting = true
 };
 
 static uint8_t command = 0;
+static uint8_t delta = 0;
+static uint32_t time_remain = 0;
 
 static inline uint8_t setting_slave(void); /* set slave before start modality master */
+static inline void state_slave();
 static inline void run_mode_slave(void);
 static inline void run_mode_master(void);
 
@@ -42,10 +47,10 @@ void MASTER_run() {
     }
     switch (init.samp_time) {
         case ZERO_S:
-            run_mode_slave();
+            run_mode_master();
             break;
         default:
-            run_mode_master();
+            run_mode_slave();
             break;
     }
 }
@@ -117,9 +122,26 @@ static inline uint8_t setting_slave(void) {
 }
 
 static inline void run_mode_slave(void) {
+    #define SIZE_STACK_SLAVE 256
+    state_slave();
+    if(delta > (SIZE_STACK_SLAVE / 100.f) * init.percentage) {
+        __BKPT(0);
+        
+    }
 
 }
 
 static inline void run_mode_master(void) {
 
+}
+
+static inline void state_slave(void) {
+    #define SIZE_RECEIVE_STATUS 8
+    const uint8_t command_state = '\x00';
+    uint8_t receive_status[SIZE_RECEIVE_STATUS];
+    HAL_UART_Transmit(&huart1, &command_state, sizeof(command_state), 100);
+    HAL_UART_Receive(&huart1, receive_status, SIZE_RECEIVE_STATUS, 100);
+
+    delta = (uint8_t)(receive_status[0] | (receive_status[1] << 8) | (receive_status[2] << 16) | (receive_status[3] << 24));
+    time_remain = (receive_status[4] | (receive_status[5] << 8) | (receive_status[6] << 16) | (receive_status[7] << 24));
 }
