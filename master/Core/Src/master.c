@@ -35,6 +35,7 @@ static struct {
     float temperature;
     uint32_t log_time;
 } stack_temperature[512];
+static uint16_t index_stack = 0;
 
 static inline uint8_t setting_slave(void); /* set slave before start modality master */
 static inline void state_slave();
@@ -134,6 +135,7 @@ static inline void run_mode_slave(void) {
     if(delta > (SIZE_STACK_SLAVE / 100.f) * init.percentage) {
         /* 0b10000000, bit 7 for call slave */
         uint8_t command_call = '\x80';
+        uint16_t temp_index = 0;
         HAL_UART_Transmit(&huart1, &command_call, 1, 100);
         HAL_UART_Receive(&huart1, buffer, (uint16_t)((((SIZE_STACK_SLAVE / 100.f) * init.percentage) + 1) * 8), 2000);
 
@@ -145,15 +147,17 @@ static inline void run_mode_slave(void) {
                 temp |= ((uint32_t)buffer[i * 8 + j] << (j * 8));
                 l_time |= ((uint32_t)buffer[i * 8 + j + 4] << (j * 8));
             }
-            stack_temperature[i].temperature = (float)temp / 100;
-            stack_temperature[i].log_time = l_time;
+            stack_temperature[(i + index_stack) & 0x1ff].temperature = (float)temp / 100;
+            stack_temperature[(i + index_stack) & 0x1ff].log_time = l_time;
+            temp_index++;
         }
+        index_stack += temp_index;
+        index_stack = index_stack & 0x1ff;
     }
 
 }
 
 static inline void run_mode_master(void) {
-
 }
 
 static inline void state_slave(void) {
